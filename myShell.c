@@ -9,24 +9,24 @@
 
 void allocationError()
 {
-    fprintf(stderr, "Allocation Error!");
-    exit(EXIT_FAILURE);
+	fprintf(stderr, "Allocation Error!");
+	exit(EXIT_FAILURE);
 }
 
 char *getUsername()
 {
-    char *username = getenv("USERNAME");
+    	char *username = getenv("USERNAME");
 	return username;
 }
 
 int exitShell()
 {
-    return 0;
+	return 0;
 }
 
 char *promptOption()
 {
-	printf("    Please choose/customise prompt:    \n");
+	printf("Please choose/customise prompt:    \n");
 	char *username = getUsername();
 	printf("[1] %s>    \n", username);
 	printf("[2] Create your own...\n%s", line);
@@ -55,110 +55,108 @@ char *promptOption()
 
 char *readLine()
 {
-    int buffSize = 1024, position = 0;
-    char *buffer = malloc(buffSize * sizeof(char));
-    char c;
+	int buffSize = 1024, position = 0;
+	char *buffer = malloc(buffSize * sizeof(char));
+    	char c;
 
-    if (!buffer)
-    {
-        allocationError();
-    }
+	if (!buffer)
+	{
+		allocationError();
+	}
 
-    while (1)
-    {
-        c = getchar();
-        if (c == EOF || c == '\n')
-        {
-            buffer[position] = '\0';
-            return buffer;
-        }
-        else
-        {
-            buffer[position] = c;
-        }
-        position++;
-    }
+	while (1)
+	{
+		c = getchar();
+		if (c == EOF || c == '\n')
+		{
+			buffer[position] = '\0';
+			return buffer;
+		}
+		else
+		{
+			buffer[position] = c;
+		}
+		position++;
+	}
 
-    if (position >= buffSize)
-    {
-        buffSize += 1024;
-        buffer = realloc(buffer, buffSize);
+	if (position >= buffSize)
+	{
+		buffSize += 1024;
+		buffer = realloc(buffer, buffSize);
 
-        if (!buffer)
-        {
-            allocationError();
-        }
-    }
+		if (!buffer)
+		{
+			allocationError();
+		}
+	}
 }
 
 int runse(char **args)
 {
-    pid_t pid;
-    int status;
+	pid_t pid;
+	int status;
 
-    if (strcmp(args[0], "exit") == 0)
-    {
-        return exitShell();
-    }
+	if (strcmp(args[0], "exit") == 0)
+	{
+		return exitShell();
+	}
 
-    pid = fork();
-    
+	pid = fork();
+
 	if (pid < 0)
-    {
+	{
 		printf("COULD NOT FORK SUCCESSFULLY...\n");
-    }
-    else if (pid == 0)
-    {
-        if (execvp(args[0], args) < 0)
+	}
+	else if (pid == 0)
+	{
+		if (execvp(args[0], args) < 0)
 		{
-	    printf("COMMAND NOT FOUND...\n");
-	    exit(EXIT_FAILURE);	
+	    		printf("COMMAND NOT FOUND...\n");
+	    		exit(EXIT_FAILURE);	
 		}
-    } 
-    else
-    {
+	}
+	else
+	{
 		waitpid(pid, &status, WUNTRACED);
-    }
+	}
 }
 
 char **tokenize(char *input)
 {
-    int buffSize = 1024, position = 0;
-    char **tokens = malloc(buffSize * sizeof(char *));
-    char *token;
+	int buffSize = 1024, position = 0;
+	char **tokens = malloc(buffSize * sizeof(char *));
+	char *token;
 
-    if (!tokens)
-    {
-        allocationError();
-    }
+	if (!tokens)
+	{
+		allocationError();
+	}
 
-    token = strtok(input, delimiter);
-    while (token != NULL)
-    {
-        tokens[position] = token;
-        position++;
+	token = strtok(input, delimiter);
+	while (token != NULL)
+	{
+		tokens[position] = token;
+		position++;
 
-        if (position >= buffSize)
-        {
-            buffSize += 1024;
-            tokens = realloc(tokens, buffSize * sizeof(char *));
+		if (position >= buffSize)
+		{
+			buffSize += 1024;
+			tokens = realloc(tokens, buffSize * sizeof(char *));
 
-            if (!tokens)
-            {
-                allocationError();
-            }
-        }
-      
-        tokens[position] = NULL;
-        return tokens;
-    }
+			if (!tokens)
+			{
+				allocationError();
+			}
+		}
+
+		tokens[position] = NULL;
+		return tokens;
+	}
 }
 
 void welcome()
 {
-	printf(line);
-	printf("          WELCOME TO myShell          \n");
-	printf(line);
+	printf("%s          WELCOME TO myShell          \n%s",line, line);
 }
 
 int main(void)
@@ -166,18 +164,18 @@ int main(void)
 	welcome();
 	printf("USERNAME = %s\n", getUsername());
 	char *prompt = promptOption();
-    char *input;
-    char **args;
-    int status = 1;
+	char *input;
+	char **args;
+	int status = 1;
 
-    do
-    {
-        printf("%s", prompt);
-        input = readLine();
-        args = tokenize(input);
-        status = runse(args);
-        free(input);
-        free(args);
-    } while (status);
+	do
+	{
+		printf("%s", prompt);
+		input = readLine();
+		args = tokenize(input);
+		status = runse(args);
+		free(input);
+		free(args);
+	} while (status);
 }
 
